@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсы криптовалют</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .refresh-btn {
+            background: #00c853;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px auto 30px;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #00e676;
+            transform: scale(1.05);
+        }
+
+        .crypto-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .crypto-card {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        .name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .price {
+            color: #00e676;
+            font-size: 18px;
+        }
+
+        .status {
+            margin-top: 15px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💰 Актуальные курсы криптовалют</h1>
+
+    <button class="refresh-btn" onclick="loadPrices()">
+        🔄 Обновить
+    </button>
+
+    <div id="cryptoList" class="crypto-list"></div>
+
+    <div id="status" class="status"></div>
+</div>
+
+<script>
+const coins = [
+    "bitcoin",
+    "ethereum",
+    "binancecoin",
+    "solana",
+    "ripple",
+    "dogecoin",
+    "tron",
+    "cardano"
+];
+
+async function loadPrices() {
+    const status = document.getElementById("status");
+    const cryptoList = document.getElementById("cryptoList");
+
+    status.textContent = "Загрузка...";
+
+    try {
+        const url =
+            `https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(",")}&vs_currencies=usd`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const names = {
+            bitcoin: "Bitcoin",
+            ethereum: "Ethereum",
+            binancecoin: "BNB",
+            solana: "Solana",
+            ripple: "XRP",
+            dogecoin: "Dogecoin",
+            tron: "TRON",
+            cardano: "Cardano"
+        };
+
+        cryptoList.innerHTML = "";
+
+        for (const coin of coins) {
+            const card = document.createElement("div");
+            card.className = "crypto-card";
+
+            card.innerHTML = `
+                <span class="name">${names[coin]}</span>
+                <span class="price">$${data[coin].usd.toLocaleString()}</span>
+            `;
+
+            cryptoList.appendChild(card);
+        }
+
+        status.textContent =
+            "Последнее обновление: " +
+            new Date().toLocaleTimeString("ru-RU");
+
+    } catch (error) {
+        status.textContent = "Ошибка загрузки данных";
+        console.error(error);
+    }
+}
+
+loadPrices();
+</script>
+
+</body>
+</html>
